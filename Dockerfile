@@ -34,4 +34,5 @@ EXPOSE 8080
 
 # NUNCA usar Gunicorn sync (rompe Playwright async)
 # Usamos worker uvicorn (ASGI/async compatible)
-CMD ["gunicorn", "-k", "uvicorn.workers.UvicornWorker", "wsgi:app", "--bind", "0.0.0.0:8080"]
+CMD ["sh", "-c", "gunicorn -k uvicorn.workers.UvicornWorker wsgi:app --bind 0.0.0.0:${PORT}"]
+
