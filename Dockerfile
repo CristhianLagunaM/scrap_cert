@@ -4,7 +4,7 @@ FROM python:3.10-bullseye
 ENV PYTHONUNBUFFERED=1
 ENV PLAYWRIGHT_BROWSERS_PATH=/ms-playwright
 
-# Dependencias básicas
+# Dependencias básicas para Playwright
 RUN apt-get update && apt-get install -y --no-install-recommends \
     wget curl unzip git \
     libnss3 libatk1.0-0 libatk-bridge2.0-0 \
@@ -16,20 +16,19 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 WORKDIR /app
 
+# Copiar e instalar requirements
 COPY requirements.txt /app/requirements.txt
-
-# Instalar dependencias Python
 RUN pip install --upgrade pip && pip install -r requirements.txt
 
-# Instalar playwright + navegador
+# Instalar playwright + chromium
 RUN pip install playwright
 RUN playwright install chromium
 
 # Copiar proyecto
 COPY . /app/
 
-# Puerto para Railway
+# Railway expone este puerto
 EXPOSE 8080
 
-# Iniciar servicio con gunicorn compatible con asyncio
-CMD ["gunicorn", "-k", "uvicorn.workers.UvicornWorker", "wsgi:app", "--bind", "0.0.0.0:8080"]
+# Ejecutar Flask con Gunicorn (WSGI)
+CMD ["gunicorn", "--bind", "0.0.0.0:8080", "wsgi:app"]

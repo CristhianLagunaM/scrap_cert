@@ -3,7 +3,6 @@
     "builder": "DOCKERFILE"
   },
   "deploy": {
-    "restartPolicyType": "ON_FAILURE",
-    "startCommand": "python app.py"
+    "restartPolicyType": "ALWAYS"
   }
 }

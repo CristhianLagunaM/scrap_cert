@@ -21,21 +21,21 @@ app = Flask(__name__)
 app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
 
 # --------------------------------------------------------------
-# DESCARGA DIRECTA DE ARCHIVOS GENERADOS
+# Descarga de archivos generados
 # --------------------------------------------------------------
 @app.route("/salidas/<path:filename>")
 def descargar_archivo(filename):
     return send_from_directory(OUTPUT_FOLDER, filename, as_attachment=True)
 
 # --------------------------------------------------------------
-# HOME (Frontend)
+# Home
 # --------------------------------------------------------------
 @app.route("/", methods=["GET"])
 def index():
     return render_template("index.html")
 
 # --------------------------------------------------------------
-# PROCESAR ARCHIVO (Endpoint principal)
+# Procesar archivo
 # --------------------------------------------------------------
 @app.route("/procesar", methods=["POST"])
 def procesar():
@@ -50,7 +50,10 @@ def procesar():
     f.save(path_excel)
 
     try:
-        detalles = asyncio.run(procesar_async(path_excel))
+        # Manejo seguro para Railway + Gunicorn
+        loop = asyncio.get_event_loop()
+        detalles = loop.run_until_complete(procesar_async(path_excel))
+
         return render_template(
             "index.html",
             status="✔ Proceso finalizado",
@@ -60,7 +63,7 @@ def procesar():
         return render_template("index.html", status=f"❌ Error: {e}")
 
 # --------------------------------------------------------------
-# PROCESAMIENTO ASÍNCRONO REAL
+# Procesamiento asíncrono
 # --------------------------------------------------------------
 async def procesar_async(path_excel):
 
@@ -71,29 +74,24 @@ async def procesar_async(path_excel):
 
     detalles = []
 
-    # ----------- MINORÍAS -----------
     if not df_min.empty:
         df_min_r = await scrap_minorias(df_min, OUTPUT_FOLDER)
-        path_min = os.path.join(OUTPUT_FOLDER, "resultado_minorias.xlsx")
-        generar_excel_coloreado(df_min_r, path_min)
+        generar_excel_coloreado(df_min_r, os.path.join(OUTPUT_FOLDER, "resultado_minorias.xlsx"))
         detalles.append("✔ MINORÍAS procesado con éxito.")
     else:
         detalles.append("ℹ No hay registros MINORÍAS.")
 
-    # ----------- INDÍGENAS -----------
     if not df_ind.empty:
         df_ind_r = await scrap_indigenas(df_ind, OUTPUT_FOLDER)
-        path_ind = os.path.join(OUTPUT_FOLDER, "resultado_indigenas.xlsx")
-        generar_excel_coloreado(df_ind_r, path_ind)
+        generar_excel_coloreado(df_ind_r, os.path.join(OUTPUT_FOLDER, "resultado_indigenas.xlsx"))
         detalles.append("✔ INDÍGENAS procesado con éxito.")
     else:
         detalles.append("ℹ No hay registros INDÍGENAS.")
 
     return detalles
 
-
 # --------------------------------------------------------------
-# RUN (Railway usa PORT env automáticamente)
+# Run
 # --------------------------------------------------------------
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 8080))
