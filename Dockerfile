@@ -29,11 +29,7 @@ RUN playwright install chromium
 # Copiar código del proyecto
 COPY . /app/
 
-# Railway usa este puerto
 EXPOSE 8080
 
-# NUNCA usar Gunicorn sync (rompe Playwright async)
-# Usamos worker uvicorn (ASGI/async compatible)
-CMD ["gunicorn", "-k", "uvicorn.workers.UvicornWorker", "wsgi:app", "--bind", "0.0.0.0:$PORT"]
-
-
+# 🔥 El CMD correcto que sí expande $PORT
+CMD gunicorn -k uvicorn.workers.UvicornWorker wsgi:app --bind 0.0.0.0:$PORT
