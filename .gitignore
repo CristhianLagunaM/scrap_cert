@@ -8,3 +8,7 @@ __pycache__/
 
 # System files
 .DS_Store
+
+
+uploads/
+salidas/

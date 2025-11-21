@@ -1,6 +1,9 @@
-USO DEL PROGRAMA:
+🚀 Procesador de Certificados – MinInterior
 
-1. Ejecutar app.py
-2. Abrir navegador en http://127.0.0.1:5000
-3. Subir archivo Excel
-4. El sistema genera PDFs y EXCELS en la carpeta /salidas
+Aplicación web en Flask + Playwright para descargar certificados automáticos del Ministerio del Interior:
+
+Minorías
+
+Indígenas
+
+Permite cargar un archivo Excel, scrapear certificados oficiales y generar archivos PDF y Excel de resumen.

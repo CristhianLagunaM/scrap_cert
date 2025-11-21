@@ -1,18 +1,29 @@
 import pandas as pd
 
 def generar_excel_coloreado(df, output):
-    writer = pd.ExcelWriter(output, engine="xlsxwriter")
-    df.to_excel(writer, index=False, sheet_name="RESULTADOS")
+    """
+    Genera un Excel con la columna 'EstadoDescarga' coloreada:
+    - OK     → azul
+    - ERROR  → rojo
+    """
 
-    wb = writer.book
-    ws = writer.sheets["RESULTADOS"]
+    # Validación segura
+    if "EstadoDescarga" not in df.columns:
+        raise ValueError("❌ La columna 'EstadoDescarga' no existe en el DataFrame.")
 
-    azul = wb.add_format({'font_color': 'blue'})
-    rojo = wb.add_format({'font_color': 'red'})
+    # Usar context manager (mucho mejor en Docker/Railway)
+    with pd.ExcelWriter(output, engine="xlsxwriter") as writer:
+        df.to_excel(writer, index=False, sheet_name="RESULTADOS")
 
-    col = df.columns.get_loc("EstadoDescarga")
+        wb = writer.book
+        ws = writer.sheets["RESULTADOS"]
 
-    for row, estado in enumerate(df["EstadoDescarga"], start=1):
-        ws.write(row, col, estado, azul if estado == "OK" else rojo)
+        azul = wb.add_format({'font_color': 'blue'})
+        rojo = wb.add_format({'font_color': 'red'})
 
-    writer.close()
+        col = df.columns.get_loc("EstadoDescarga")
+
+        # Pintar filas
+        for row, estado in enumerate(df["EstadoDescarga"], start=1):
+            fmt = azul if str(estado).upper() == "OK" else rojo
+            ws.write(row, col, estado, fmt)

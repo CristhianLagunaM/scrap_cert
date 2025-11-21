@@ -20,7 +20,7 @@
 
             <h2 class="mb-3">📄 Procesador de Certificados – MinInterior</h2>
 
-            <form id="form-procesar" method="POST" action="/procesar" enctype="multipart/form-data">
+            <form id="form-procesar" method="POST" action="procesar" enctype="multipart/form-data">
                 <label class="form-label">Selecciona un archivo Excel:</label>
                 <input type="file" name="archivo" class="form-control mb-3" required>
 
@@ -43,8 +43,8 @@
 
             <h4>Archivos generados:</h4>
             <ul>
-                <li><a href="/salidas/resultado_minorias.xlsx" download>📥 Descargar resumen MINORÍAS</a></li>
-                <li><a href="/salidas/resultado_indigenas.xlsx" download>📥 Descargar resumen INDÍGENAS</a></li>
+                <li><a href="salidas/resultado_minorias.xlsx" download>📥 Descargar resumen MINORÍAS</a></li>
+                <li><a href="salidas/resultado_indigenas.xlsx" download>📥 Descargar resumen INDÍGENAS</a></li>
             </ul>
             {% endif %}
 
@@ -53,7 +53,7 @@
 
 </div>
 
-<!-- MODAL DE PROCESAMIENTO -->
+<!-- MODAL -->
 <div class="modal fade" id="modalProcesando" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content" style="border-radius: 12px;">
@@ -73,13 +73,11 @@
 
 <script>
 document.getElementById("form-procesar").addEventListener("submit", function() {
-
     var modal = new bootstrap.Modal(document.getElementById('modalProcesando'), {
         backdrop: 'static',
         keyboard: false
     });
     modal.show();
-
     document.getElementById("btnProcesar").disabled = true;
 });
 </script>
