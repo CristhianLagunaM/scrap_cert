@@ -1,10 +1,10 @@
-# Imagen base oficial
+# Imagen base oficial de Python + Debian estable
 FROM python:3.10-bullseye
 
 ENV PYTHONUNBUFFERED=1
 ENV PLAYWRIGHT_BROWSERS_PATH=/ms-playwright
 
-# Dependencias básicas para Playwright
+# Dependencias necesarias para Playwright Chromium
 RUN apt-get update && apt-get install -y --no-install-recommends \
     wget curl unzip git \
     libnss3 libatk1.0-0 libatk-bridge2.0-0 \
@@ -16,19 +16,22 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 WORKDIR /app
 
-# Copiar e instalar requirements
+# Copiar requirements
 COPY requirements.txt /app/requirements.txt
+
+# Instalar dependencias Python
 RUN pip install --upgrade pip && pip install -r requirements.txt
 
-# Instalar playwright + chromium
+# Instalar Playwright y navegador
 RUN pip install playwright
 RUN playwright install chromium
 
-# Copiar proyecto
+# Copiar código del proyecto
 COPY . /app/
 
-# Railway expone este puerto
+# Railway usa este puerto
 EXPOSE 8080
 
-# Ejecutar Flask con Gunicorn (WSGI)
-CMD ["gunicorn", "--bind", "0.0.0.0:8080", "wsgi:app"]
+# NUNCA usar Gunicorn sync (rompe Playwright async)
+# Usamos worker uvicorn (ASGI/async compatible)
+CMD ["gunicorn", "-k", "uvicorn.workers.UvicornWorker", "wsgi:app", "--bind", "0.0.0.0:8080"]
