@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Certificados MinInterior</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+        body { background: #f4f6f9; }
+        .card { margin-top:40px; border-radius: 12px; }
+    </style>
+</head>
+
+<body>
+<div class="container">
+
+    <div class="card shadow">
+        <div class="card-body">
+
+            <h2 class="mb-3">📄 Procesador de Certificados – MinInterior</h2>
+
+            <form id="form-procesar" method="POST" action="/procesar" enctype="multipart/form-data">
+                <label class="form-label">Selecciona un archivo Excel:</label>
+                <input type="file" name="archivo" class="form-control mb-3" required>
+
+                <button class="btn btn-primary" id="btnProcesar">🚀 Procesar</button>
+            </form>
+
+            {% if status %}
+            <div class="alert alert-info mt-4">
+                <b>Estado:</b> {{ status }}
+            </div>
+            {% endif %}
+
+            {% if detalles %}
+            <h4 class="mt-4">Resultado del proceso:</h4>
+            <ul>
+                {% for d in detalles %}
+                <li>{{ d }}</li>
+                {% endfor %}
+            </ul>
+
+            <h4>Archivos generados:</h4>
+            <ul>
+                <li><a href="/salidas/resultado_minorias.xlsx" download>📥 Descargar resumen MINORÍAS</a></li>
+                <li><a href="/salidas/resultado_indigenas.xlsx" download>📥 Descargar resumen INDÍGENAS</a></li>
+            </ul>
+            {% endif %}
+
+        </div>
+    </div>
+
+</div>
+
+<!-- MODAL DE PROCESAMIENTO -->
+<div class="modal fade" id="modalProcesando" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content" style="border-radius: 12px;">
+      <div class="modal-body text-center p-4">
+        <div class="spinner-border text-primary mb-3" style="width: 3rem; height: 3rem;"></div>
+        <h4>⏳ Procesando…</h4>
+        <p class="text-muted">
+          Este proceso puede tardar varios minutos.<br>
+          Por favor no cierres esta ventana.
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+document.getElementById("form-procesar").addEventListener("submit", function() {
+
+    var modal = new bootstrap.Modal(document.getElementById('modalProcesando'), {
+        backdrop: 'static',
+        keyboard: false
+    });
+    modal.show();
+
+    document.getElementById("btnProcesar").disabled = true;
+});
+</script>
+
+</body>
+</html>
